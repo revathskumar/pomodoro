@@ -14,7 +14,7 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { app = Pomodoro, state = Paused, minutes = 0, seconds = 20 }, Cmd.none )
+    ( { app = Pomodoro, state = Paused, minutes = 25, seconds = 0 }, Cmd.none )
 
 
 ---- UPDATE ----
@@ -33,21 +33,21 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         UpdateAppType Break ->
-            ( { model | state = Running, minutes = 0, seconds = 30, app = Break } , Cmd.none )
+            ( { model | state = Running, minutes = 5, seconds = 0, app = Break } , Cmd.none )
         UpdateAppType Pomodoro ->
-            ( { model | state = Running, minutes = 0, seconds = 20, app = Pomodoro } , Cmd.none )
+            ( { model | state = Running, minutes = 25, seconds = 0, app = Pomodoro } , Cmd.none )
         Tick time ->
             if model.state == Running then
-                if model.minutes >= 0 && model.seconds > 0 then 
-                    let
-                        newSeconds = if (model.seconds == 0) then 59 else model.seconds - 1
-                        newMinutes = if (newSeconds == 59) then model.minutes - 1 else model.minutes
-                    in
-                        ( { model | seconds = newSeconds, minutes = newMinutes } , Cmd.none )
-                else 
-                    let
-                        action = if model.app == Pomodoro then "break" else "work"
-                    in
+                let
+                    newSeconds = if (model.seconds == 0) then 59 else model.seconds - 1
+                    newMinutes = if (newSeconds == 59) then model.minutes - 1 else model.minutes
+                in
+                    if newMinutes >= 0 && newSeconds >= 0 then 
+                            ( { model | seconds = newSeconds, minutes = newMinutes } , Cmd.none )
+                    else 
+                        let
+                            action = if model.app == Pomodoro then "break" else "work"
+                        in
                         ( { model | state = Complete } , sendNotification ("it's time for " ++ action))
             else
                 ( model, Cmd.none )

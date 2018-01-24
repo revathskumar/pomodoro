@@ -84,7 +84,7 @@ renderButton state appType =
 view : Model -> Html Msg
 view model =
     div []
-        [ img [ src "/logo.svg" ] []
+        [ img [ src "https://revathskumar.github.io/pomodoro/logo.svg" ] []
         , h1 [] [ text (if model.app == Pomodoro then "Work" else "Break") ]
         , div [class "time"] [
             text ((padWithZero model.minutes) ++ ":" ++ (padWithZero model.seconds))

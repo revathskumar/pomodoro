@@ -8,5 +8,4 @@ cache:
   directories:
     - "node_modules"
     - "elm-stuff"
-before_script:
-  - "elm package install -y"
+    - "tests/elm-stuff/"

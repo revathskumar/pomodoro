@@ -11,10 +11,14 @@ import Time exposing (Time, second, minute)
 type alias Model =
     { app: AppTypes, state: ClockStates, minutes:Int, seconds:Int }
 
+initModel : Model
+initModel =
+    { app = Pomodoro, state = Paused, minutes = 25, seconds = 0 }
+
 
 init : ( Model, Cmd Msg )
 init =
-    ( { app = Pomodoro, state = Paused, minutes = 25, seconds = 0 }, Cmd.none )
+    ( initModel , Cmd.none )
 
 
 ---- UPDATE ----
@@ -42,16 +46,16 @@ update msg model =
                     newSeconds = if (model.seconds == 0) then 59 else model.seconds - 1
                     newMinutes = if (newSeconds == 59) then model.minutes - 1 else model.minutes
                 in
-                    if newMinutes >= 0 && newSeconds >= 0 then 
+                    if newMinutes >= 0 && newSeconds >= 0 then
                             ( { model | seconds = newSeconds, minutes = newMinutes } , Cmd.none )
-                    else 
+                    else
                         let
                             action = if model.app == Pomodoro then "break" else "work"
                         in
                         ( { model | state = Complete } , sendNotification ("it's time for " ++ action))
             else
                 ( model, Cmd.none )
-        UpdateClockState state -> 
+        UpdateClockState state ->
             ( { model | state = state} , Cmd.none )
         _ ->
             ( model, Cmd.none )
@@ -68,17 +72,16 @@ padWithZero n =
 
 renderButton : ClockStates -> AppTypes -> Html Msg
 renderButton state appType =
-    case state of 
+    case state of
         Running ->
             button [onClick (UpdateClockState Paused)] [ text "Pause"]
         Paused ->
             button [onClick (UpdateClockState Running)] [ text "Start"]
         Complete ->
             let
-                nextAppType = if appType == Pomodoro then Break else Pomodoro                         
+                nextAppType = if appType == Pomodoro then Break else Pomodoro
             in
                 button [onClick (UpdateAppType nextAppType)] [ text "Start"]
-                    
 
 
 view : Model -> Html Msg
@@ -101,7 +104,7 @@ subscriptions model =
     else
         Sub.none
         -- Time.every minute Tick
-        
+
 port sendNotification : String -> Cmd msg
 
 

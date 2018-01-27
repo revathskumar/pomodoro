@@ -32,8 +32,8 @@ updateAppTypeSelectAppType =
 updateClockStateSelectClockState : Test
 updateClockStateSelectClockState =
     describe "UpdateClockState should select the clockState"
-        [ test "should set as Running" <| 
-            \_ -> 
+        [ test "should set as Running" <|
+            \_ ->
                 Main.initModel
                     |> Main.update (Main.UpdateClockState Main.Running)
                     |> Tuple.first
@@ -44,22 +44,22 @@ updateClockStateSelectClockState =
 updateTick : Test
 updateTick =
     describe "on Running clockState"
-        [ test "should update the seconds" <| 
-            \_ -> 
+        [ test "should update the seconds" <|
+            \_ ->
                 { initModel | state = Main.Running }
                     |> Main.update (Main.Tick Time.second)
                     |> Tuple.first
                     |> .seconds
                     |> Expect.equal 59
         , test "on zero, should set state to Complete" <|
-            \_ -> 
+            \_ ->
                 { initModel | state = Main.Running, seconds = 0, minutes = 0 }
                     |> Main.update (Main.Tick Time.second)
                     |> Tuple.first
                     |> .state
                     |> Expect.equal Main.Complete
         , test "on zero, should send the sendNotification command" <|
-            \_ -> 
+            \_ ->
                 { initModel | state = Main.Running, seconds = 0, minutes = 0 }
                     |> Main.update (Main.Tick Time.second)
                     |> Tuple.second
@@ -70,7 +70,7 @@ initialView : Test
 initialView =
     describe "on initial view"
         [  test "should render work as heading" <|
-            \_ -> 
+            \_ ->
                 initModel
                     |> Main.view
                     |> Query.fromHtml
@@ -92,12 +92,12 @@ initialView =
                     |> Query.has [ text "25:00" ]
         ]
 
-renderBreakView :Test 
-renderBreakView = 
+renderBreakView :Test
+renderBreakView =
     describe "on break view"
         [  test "should render break as heading" <|
-            \_ -> 
-                initModel
+            \_ ->
+                { initModel | app = Main.Break }
                     |> Main.view
                     |> Query.fromHtml
                     |> Query.find [tag "h1"]
@@ -105,6 +105,8 @@ renderBreakView =
         ,  test "should render time padded with zero" <|
             \_ ->
                 initModel
+                    |> Main.update (Main.UpdateAppType Main.Break)
+                    |> Tuple.first
                     |> Main.view
                     |> Query.fromHtml
                     |> Query.find [class "time"]
@@ -115,7 +117,7 @@ renderRunningView : Test
 renderRunningView =
     describe "on running state"
         [  test "should render pause button" <|
-            \_ -> 
+            \_ ->
                 { initModel | state = Main.Running }
                     |> Main.view
                     |> Query.fromHtml
